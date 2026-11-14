@@ -1,0 +1,924 @@
+/*
+ * Tidebot in the rodi. family: light surfaces, pink for what is live and yours,
+ * plum for what is finished or belongs to the sea. Colors come from tokens.css.
+ */
+
+:root {
+  --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  --code-size: 13px;
+  --code-line: 20px;
+  scrollbar-gutter: stable;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body.fd-theme {
+  display: flex;
+  flex-direction: column;
+  background: var(--fd-bg-app);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+/* Compact controls sit close together, so the focus ring stays tight. */
+.fd-theme :where(button, textarea):focus-visible {
+  outline-offset: 2px;
+}
+
+.sprites {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-sardine {
+  color: var(--fd-plum);
+}
+
+.icon-crab {
+  color: var(--fd-rose);
+}
+
+.icon-tuna {
+  color: var(--fd-plum-text);
+}
+
+/* Header */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--fd-line-app);
+  background: var(--fd-surface);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mark {
+  width: 28px;
+  height: 28px;
+  align-self: center;
+  flex: none;
+}
+
+.brand h1 {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.brand h1 span {
+  color: var(--fd-rose);
+}
+
+.brand p {
+  overflow: hidden;
+  color: var(--fd-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 10px;
+  border: 1px solid var(--fd-line);
+  border-radius: 999px;
+  background: var(--fd-surface);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock {
+  min-width: 44px;
+  color: var(--fd-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Layout */
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(340px, 1.1fr) 340px;
+  gap: 16px;
+  padding: 16px 20px 20px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--fd-line);
+  border-radius: 20px;
+  background: var(--fd-surface);
+  box-shadow: var(--fd-shadow);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 10px 18px;
+  border-bottom: 1px solid var(--fd-line-app);
+}
+
+.panel-head h2 {
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+/* Pink dot: the script is live. Plum dot: it is at rest. Red dot: it failed. */
+.status {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--fd-muted);
+  font-size: 13px;
+}
+
+.status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fd-plum);
+}
+
+.status[data-status='running'] {
+  color: var(--fd-rose-strong);
+}
+
+.status[data-status='running']::before {
+  background: var(--fd-accent);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.status[data-status='error'] {
+  color: var(--fd-error);
+}
+
+.status[data-status='error']::before {
+  background: var(--fd-error);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 16px;
+  border: 1px solid var(--fd-control-line);
+  border-radius: 14px;
+  background: var(--fd-surface);
+  color: var(--fd-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--fd-ease),
+    transform var(--fd-ease);
+}
+
+.button.run {
+  border-color: var(--fd-accent);
+  background: var(--fd-accent);
+  color: var(--fd-on-accent);
+}
+
+@media (hover: hover) {
+  .button:hover:not(:disabled) {
+    background: var(--fd-rose-soft);
+    transform: translateY(-1px);
+  }
+
+  .button.run:hover:not(:disabled) {
+    background: var(--fd-accent-hover);
+  }
+}
+
+.button:disabled {
+  border-color: var(--fd-line);
+  color: var(--fd-muted);
+  cursor: default;
+}
+
+@media (pointer: coarse) {
+  .button {
+    min-height: 44px;
+  }
+}
+
+/* Editor */
+
+.editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--fd-surface);
+  font: var(--code-size) / var(--code-line) var(--mono);
+}
+
+.editor-gutter {
+  flex: none;
+  width: 44px;
+  overflow: hidden;
+  border-right: 1px solid var(--fd-line-app);
+  background: var(--fd-bg-app);
+  color: var(--fd-control-line);
+  text-align: right;
+  user-select: none;
+}
+
+.editor-numbers {
+  padding: 12px 10px 12px 0;
+}
+
+.editor-number.active {
+  color: var(--fd-rose-strong);
+  font-weight: 700;
+}
+
+.editor-number.error {
+  color: var(--fd-error);
+  font-weight: 700;
+}
+
+.editor-code {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.editor-layer,
+.editor-input {
+  margin: 0;
+  padding: 12px 14px;
+  border: 0;
+  font: inherit;
+  letter-spacing: 0;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.editor-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  color: var(--fd-text);
+  pointer-events: none;
+}
+
+.editor-line {
+  margin: 0 -14px;
+  padding: 0 14px;
+}
+
+/* The running line is live: soft rose with a rose bar. */
+.editor-line.active {
+  background: var(--fd-rose-soft);
+  box-shadow: inset 3px 0 0 var(--fd-accent);
+}
+
+/* The failed line also gets a wavy underline, so it reads without its color. */
+.editor-line.error {
+  background: var(--fd-rose-soft);
+  box-shadow: inset 3px 0 0 var(--fd-error);
+  text-decoration: underline wavy var(--fd-error);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.editor-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--fd-text);
+}
+
+.fd-theme .editor-input:focus-visible {
+  outline: none;
+}
+
+.editor:focus-within {
+  box-shadow: inset 0 0 0 2px var(--fd-rose-soft);
+}
+
+.editor-input::selection {
+  background: rgb(245 198 210 / 60%);
+  color: transparent;
+}
+
+.tok-comment {
+  color: var(--fd-muted);
+  font-style: italic;
+}
+
+.tok-text {
+  color: var(--fd-success);
+}
+
+.tok-number {
+  color: var(--fd-plum-text);
+}
+
+.tok-keyword {
+  color: var(--fd-rose-strong);
+  font-weight: 600;
+}
+
+.tok-builtin {
+  color: var(--fd-plum-text);
+  font-weight: 600;
+}
+
+/* Console: every line is a small notice with a bar on its left edge. */
+
+.console {
+  flex: none;
+  height: 136px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding: 8px 6px 8px 10px;
+  border-top: 1px solid var(--fd-line-app);
+  background: var(--fd-bg-app);
+  font: 12px/1.5 var(--mono);
+}
+
+.log {
+  margin-bottom: 2px;
+  padding: 2px 10px;
+  border-left: 3px solid transparent;
+  border-radius: 0 8px 8px 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.log-info {
+  color: var(--fd-muted);
+}
+
+.log-print {
+  border-left-color: var(--fd-plum);
+}
+
+.log-done {
+  border-left-color: var(--fd-success);
+  color: var(--fd-success);
+  animation: flash 600ms ease-out;
+}
+
+.log-hint {
+  border-left-color: var(--fd-warning);
+  animation: flash 600ms ease-out;
+}
+
+.log-error {
+  border-left-color: var(--fd-error);
+  background: var(--fd-rose-soft);
+  color: var(--fd-error);
+  animation: flash 600ms ease-out;
+}
+
+/* A new hint or error flashes once, so a repeated mistake is answered again. */
+@keyframes flash {
+  from {
+    background: var(--fd-brand-blush);
+  }
+}
+
+/* Sea */
+
+.sea {
+  padding: 16px;
+  gap: 12px;
+}
+
+.sea-frame {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+
+.sea-frame canvas {
+  display: block;
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+}
+
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--fd-line);
+  border-radius: var(--fd-radius-sm);
+  background: var(--fd-bg-app);
+  font-variant-numeric: tabular-nums;
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-name {
+  color: var(--fd-muted);
+  font-size: 13px;
+}
+
+/* Room for the widest value, so a growing number does not push its neighbours. */
+#cargo {
+  min-width: 7ch;
+}
+
+#position,
+#pots {
+  min-width: 5ch;
+}
+
+.compass {
+  margin-left: auto;
+}
+
+.meter {
+  width: 72px;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--fd-line);
+}
+
+.meter i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--fd-accent);
+}
+
+/* The next goal is a notice. Its height is reserved for two lines. */
+.tip {
+  min-height: calc(3em + 22px);
+  padding: 10px 14px;
+  border: 1px solid var(--fd-line);
+  border-left: 4px solid var(--fd-rose);
+  border-radius: var(--fd-radius-sm);
+  background: var(--fd-surface);
+}
+
+/* Workshop and guide */
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border-bottom: 1px solid var(--fd-line-app);
+}
+
+.tabs button {
+  flex: 1;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--fd-radius-sm);
+  background: transparent;
+  color: var(--fd-muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--fd-ease);
+}
+
+.tabs button[aria-selected='true'] {
+  background: var(--fd-rose-soft);
+  color: var(--fd-rose-strong);
+}
+
+/* The slot is always there, so a new count moves nothing. */
+.badge {
+  display: inline-block;
+  min-width: 22px;
+  margin-left: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--fd-accent);
+  color: var(--fd-on-accent);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.badge:empty {
+  visibility: hidden;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.group {
+  padding: 16px 18px 6px;
+  color: var(--fd-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Upgrades are rows of one list. The left bar and the fill tell the state. */
+.card {
+  padding: 12px 14px 12px 15px;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--fd-line-app);
+}
+
+.card.ready {
+  border-left-color: var(--fd-rose);
+  background: var(--fd-rose-soft);
+}
+
+.card.done {
+  background: var(--fd-plum-soft);
+  color: var(--fd-muted);
+}
+
+.card.locked {
+  background-color: var(--fd-bg-app);
+  background-image: repeating-linear-gradient(135deg, transparent 0 6px, var(--fd-line) 6px 8px);
+  color: var(--fd-muted);
+}
+
+.card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card h4 {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.card p {
+  margin-top: 2px;
+  color: var(--fd-muted);
+  font-size: 13px;
+}
+
+.card .stat {
+  color: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A task waits for the script: a dashed plum frame. Done, it settles into soft plum. */
+.card .task {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 2px dashed var(--fd-plum-text);
+  border-radius: var(--fd-radius-sm);
+  background: var(--fd-surface);
+  color: var(--fd-text);
+}
+
+.card .task.done {
+  border: 2px solid transparent;
+  background: var(--fd-plum-soft);
+  color: var(--fd-plum-text);
+}
+
+.task .icon {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--fd-plum-text);
+}
+
+.task b {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+
+.card footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+  margin-top: 8px;
+}
+
+.pips {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.pip {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--fd-control-line);
+  border-radius: 50%;
+}
+
+.pip.on {
+  border-color: var(--fd-plum);
+  background: var(--fd-plum);
+}
+
+.prices {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fd-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Not enough of this catch yet: the number steps back. */
+.price.short {
+  color: var(--fd-muted);
+  font-weight: 400;
+}
+
+.price .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.button.buy {
+  min-height: 34px;
+  padding: 5px 16px;
+  border-color: var(--fd-rose-strong);
+  color: var(--fd-rose-strong);
+}
+
+.button.buy:disabled {
+  border-color: var(--fd-line);
+  background: transparent;
+  color: var(--fd-muted);
+}
+
+.owned,
+.needs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.owned {
+  color: var(--fd-plum-text);
+}
+
+.owned .icon,
+.needs .icon {
+  width: 18px;
+  height: 18px;
+  color: inherit;
+}
+
+.doc {
+  padding: 0 18px 4px;
+}
+
+.doc .group {
+  padding-inline: 0;
+}
+
+.doc p {
+  margin-bottom: 6px;
+  color: var(--fd-muted);
+  font-size: 13px;
+}
+
+.doc dl {
+  margin: 0;
+}
+
+.doc dt {
+  margin-top: 8px;
+  color: var(--fd-rose-strong);
+  font: 600 12.5px/1.4 var(--mono);
+}
+
+.doc dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+.doc pre {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border: 1px solid var(--fd-line);
+  border-radius: var(--fd-radius-sm);
+  background: var(--fd-bg-app);
+  font: 12px/1.5 var(--mono);
+}
+
+.side-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px 8px 18px;
+  border-top: 1px solid var(--fd-line-app);
+  color: var(--fd-muted);
+  font-size: 12px;
+}
+
+.credit span {
+  color: var(--fd-brand);
+}
+
+/* Erasing the save cannot be undone: once armed, the button turns dashed and red. */
+.reset {
+  min-height: 30px;
+  padding: 4px 12px;
+  border: 1px solid var(--fd-control-line);
+  border-radius: 10px;
+  background: var(--fd-surface);
+  color: var(--fd-muted);
+  cursor: pointer;
+}
+
+.reset[data-armed='yes'] {
+  border-style: dashed;
+  border-color: var(--fd-error);
+  color: var(--fd-error);
+}
+
+/* Win dialog */
+
+.win {
+  max-width: 400px;
+  padding: 32px;
+  border: 1px solid var(--fd-line);
+  border-radius: var(--fd-radius-lg);
+  background: var(--fd-surface);
+  color: var(--fd-text);
+  box-shadow: 0 24px 60px rgb(118 52 77 / 16%);
+  text-align: center;
+}
+
+.win::backdrop {
+  background: rgb(41 36 42 / 35%);
+}
+
+.win h2 {
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.win p {
+  margin: 12px 0 24px;
+  color: var(--fd-muted);
+}
+
+.win b {
+  color: var(--fd-text);
+}
+
+/* Narrow screens: the page scrolls and panels stack. */
+
+@media (max-width: 1100px) {
+  html,
+  body {
+    height: auto;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .script,
+  .sea {
+    height: 620px;
+  }
+
+  .side {
+    grid-column: 1 / -1;
+    max-height: 560px;
+  }
+
+  .brand p {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  /* The stock always gets its own row, so a new kind of catch never crowds the title. */
+  .top {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 16px;
+  }
+
+  .stock {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px 16px 16px;
+  }
+
+  .script {
+    height: 520px;
+  }
+
+  .sea {
+    height: auto;
+  }
+
+  .sea-frame {
+    container-type: inline-size;
+  }
+
+  .sea-frame canvas {
+    width: 100cqw;
+    height: 100cqw;
+  }
+}
